@@ -1,5 +1,5 @@
 {
-    "port":5001,
+    "port":5000,
     "secret":"BekBebek2003",
     "mongoUri":"mongodb+srv://3Face:3Face123456@cluster0.rkzy5f7.mongodb.net/solve?retryWrites=true&w=majority"
 }
