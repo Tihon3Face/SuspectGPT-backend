@@ -6,6 +6,7 @@ const cors = require('cors');
 const events = require('events');
 const User = require('./models/User');
 const store = require('./redux/store');
+const blockquotes = require('./blockquotes')
 
 const emitter = new events.EventEmitter()
 
@@ -106,6 +107,16 @@ const PORT = 5000
         console.log(e)
     }
   })
+
+  cron.schedule('0 * * * *', () => {
+  let randomPhrase = blockquotes[Math.floor(Math.random() * blockquotes.length)]
+  const message = {role:'Царь',from:'SuspectBot',value: randomPhrase,id: Date.now(),roleOfChat:'SuspectBot',likes:0,dislikes:0};
+
+  // Отправка сообщения по маршруту "/post-message"
+  store.dispatch({ type: "ADD_MESSAGE", payload: message });
+  emitter.emit("newMessage", message);
+
+});
 
 async function start () {
     try {
