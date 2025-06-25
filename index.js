@@ -51,7 +51,7 @@ const PORT = 5000
               console.log(error)
           }
       }else{
-          res.status(400).json('ИЗИ ХАХАХАХА ИДИ НАХУЙ')
+          res.status(400).json('не пройдёшь')
       }
   })
   app.post("/post-update-array",async (req,res) => {
