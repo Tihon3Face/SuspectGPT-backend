@@ -14,12 +14,12 @@ const PORT = 5000
 
   app.use(express.json());
   app.use(cors());
-  app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'http://localhost:3000'); // Разрешаем доступ с этого домена
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE'); // Разрешенные методы
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization'); // Разрешенные заголовки
-    next();
-  });
+//   app.use((req, res, next) => {
+//     res.header('Access-Control-Allow-Origin', 'http://localhost:3000'); // Разрешаем доступ с этого домена
+//     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE'); // Разрешенные методы
+//     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization'); // Разрешенные заголовки
+//     next();
+//   });
 
 
   
