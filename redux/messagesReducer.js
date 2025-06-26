@@ -1,6 +1,6 @@
 // const fs = require('fs');
 
-const initialState = []
+
   
 // function loadState() {
 //     try {
@@ -23,6 +23,8 @@ const initialState = []
 //         console.error('Error saving state:', err);
 //     }
 // }
+
+const initialState = []
 
 const ADD_MESSAGE = 'ADD_MESSAGE'
 const DELETE_MESSAGE = 'DELETE_MESSAGE'

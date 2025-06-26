@@ -5,7 +5,8 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const events = require('events');
 const User = require('./models/User');
-const store = require('./redux/store');
+const Message = require('./models/Message');
+// const store = require('./redux/store');
 const cron = require('node-cron');
 const blockquotes = require('./blockquotes')
 
@@ -57,8 +58,9 @@ const PORT = 5000
       }
   })
   app.post("/post-update-array",async (req,res) => {
-      emitter.emit('updateArray', store.getState());
-      res.status(200).json(store.getState()).end()
+      const messages = await Message.find({});
+      emitter.emit('updateArray', messages);
+      res.status(200).json(messages).end()
   })
   app.get("/get-update-array",async (req,res) => {
       emitter.once('updateArray', (m) => {
@@ -76,8 +78,9 @@ const PORT = 5000
   })
   app.get("/get-messages", async (req,res) => {
     try{
-      console.log(...new Set(store.getState()))
-      res.json(store.getState())
+      const messages = await Message.find({});
+      console.log(...new Set(messages))
+      res.json(messages)
       res.end()
     }catch (e) {
         console.log(e);
@@ -85,15 +88,20 @@ const PORT = 5000
     }
   })
   app.post("/post-message",async (req,res) => {
-      store.dispatch({type: "ADD_MESSAGE",payload: req.body})
+      const message = await Message.create(req.body);
+      await message.save();
       emitter.emit("newMessage", req.body)
       res.status(200)
       res.end()
   })
   app.delete("/delete-message/:id/:from", async (req, res) => {
       try{
-          store.dispatch({type: "DELETE_MESSAGE", payload: {from: req.params.from, id: req.params.id}})
-          res.json([store.getState(),{from: req.params.from, id: req.params.id}]);
+          await Message.findOneAndDelete({
+            from: req.params.from,
+            id: req.params.id
+          });
+          const messages = await Message.find({});
+          res.json([messages,{from: req.params.from, id: req.params.id}]);
       }catch (e){
           console.log(e);
       }
@@ -102,6 +110,19 @@ const PORT = 5000
     try{
         console.log({rep: req.params.rep === 'false' ? false : true, mes: JSON.parse(req.params.mes)})
         store.dispatch({type: "COMMIT_REP", payload: {rep: req.params.rep === 'false' ? false : true, mes: JSON.parse(req.params.mes), def: req.params.def}})
+        if(req.params.rep === 'false' ? false : true){
+          if(req.params.def === 'likes'){
+            await Message.findByIdAndUpdate(JSON.parse(req.params.mes),{ $inc: { likes: 1 } },{ new: true });
+          }else{
+            await Message.findByIdAndUpdate(JSON.parse(req.params.mes),{ $inc: { dislikes: 1 } },{ new: true });
+          }
+        }else{
+          if(req.params.def === 'likes'){
+            await Message.findByIdAndUpdate(JSON.parse(req.params.mes),{ $inc: { likes: -1 } },{ new: true });
+          }else{
+            await Message.findByIdAndUpdate(JSON.parse(req.params.mes),{ $inc: { dislikes: -1 } },{ new: true });
+          }
+        }
         res.json()
     }catch (e){
         res.json(e)
@@ -109,14 +130,13 @@ const PORT = 5000
     }
   })
 
-  cron.schedule('0 * * * *', () => {
-  let randomPhrase = blockquotes[Math.floor(Math.random() * blockquotes.length)]
-  const message = {role:'Царь',from:'SuspectBot',value: randomPhrase,id: Date.now(),roleOfChat:'SuspectBot',likes:0,dislikes:0};
+cron.schedule('0 * * * *', () => {
+    let randomPhrase = blockquotes[Math.floor(Math.random() * blockquotes.length)]
+    const message = {role:'Царь',from:'SuspectBot',value: randomPhrase,id: Date.now(),roleOfChat:'SuspectBot',likes:0,dislikes:0};
 
-  // Отправка сообщения по маршруту "/post-message"
-  store.dispatch({ type: "ADD_MESSAGE", payload: message });
-  emitter.emit("newMessage", message);
-
+    // Отправка сообщения по маршруту "/post-message"
+    store.dispatch({ type: "ADD_MESSAGE", payload: message });
+    emitter.emit("newMessage", message);
 });
 
 async function start () {
