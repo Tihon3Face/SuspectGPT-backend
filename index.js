@@ -129,12 +129,13 @@ const PORT = 5000
     }
   })
 
-cron.schedule('0 * * * *', () => {
+cron.schedule('0 * * * *', async () => {
     let randomPhrase = blockquotes[Math.floor(Math.random() * blockquotes.length)]
     const message = {role:'Царь',from:'SuspectBot',value: randomPhrase,id: Date.now(),roleOfChat:'SuspectBot',likes:0,dislikes:0};
 
     // Отправка сообщения по маршруту "/post-message"
-    store.dispatch({ type: "ADD_MESSAGE", payload: message });
+    const messageInBase = await Message.create(message);
+    await messageInBase.save();
     emitter.emit("newMessage", message);
 });
 
