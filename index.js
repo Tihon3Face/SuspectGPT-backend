@@ -109,7 +109,6 @@ const PORT = 5000
   app.patch('/commit-rep/:rep/:mes/:def', async (req, res) => {
     try{
         console.log({rep: req.params.rep === 'false' ? false : true, mes: JSON.parse(req.params.mes)})
-        store.dispatch({type: "COMMIT_REP", payload: {rep: req.params.rep === 'false' ? false : true, mes: JSON.parse(req.params.mes), def: req.params.def}})
         if(req.params.rep === 'false' ? false : true){
           if(req.params.def === 'likes'){
             await Message.findByIdAndUpdate(JSON.parse(req.params.mes),{ $inc: { likes: 1 } },{ new: true });
