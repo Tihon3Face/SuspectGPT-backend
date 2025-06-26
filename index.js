@@ -62,7 +62,7 @@ const PORT = 5000
   })
   app.get("/get-update-array",async (req,res) => {
       emitter.once('updateArray', (m) => {
-          res.json(m);
+          res.json(m); 
       });
   })
   app.get("/get-message", async (req,res) => {
