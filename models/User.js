@@ -6,6 +6,7 @@ const UserSchema = new mongoose.Schema({
     type: String,
     default: function() {
       const now = new Date();
+      now.setTime(now.getTime() + 5 * 60 * 60 * 1000);
       return `${now.getDate()}.${now.getMonth() + 1}.${now.getFullYear()} ${now.getHours()}:${now.getMinutes()}`;
     }
   }
